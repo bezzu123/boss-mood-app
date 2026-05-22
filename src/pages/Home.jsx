@@ -59,6 +59,65 @@ function ScoreBar({ love, bad }) {
   )
 }
 
+const WEATHER = [
+  {
+    icon: '☀️',
+    label: 'Sunny & Clear',
+    meaning: 'Clear expectations, high morale, and smooth operations.',
+    bg: 'bg-yellow-500/10',
+    border: 'border-yellow-400/30',
+    text: 'text-yellow-300',
+  },
+  {
+    icon: '🌤️',
+    label: 'Partly Cloudy',
+    meaning: 'Good energy, but shifting priorities or minor communication blocks.',
+    bg: 'bg-blue-400/10',
+    border: 'border-blue-400/30',
+    text: 'text-blue-300',
+  },
+  {
+    icon: '⛈️',
+    label: 'Thunderstorm Incoming',
+    meaning: 'High stress, bottlenecked approvals, or burnout risks.',
+    bg: 'bg-red-500/10',
+    border: 'border-red-400/30',
+    text: 'text-red-300',
+  },
+]
+
+function getWeather(love, bad) {
+  const total = love + bad
+  if (total === 0) return null
+  const pct = love / total
+  if (pct >= 0.65) return WEATHER[0]
+  if (pct >= 0.40) return WEATHER[1]
+  return WEATHER[2]
+}
+
+function WeatherWidget({ love, bad }) {
+  const w = getWeather(love, bad)
+  if (!w) return (
+    <div className="bg-white/5 border border-white/10 rounded-3xl p-5 text-center">
+      <div className="text-4xl mb-2">🌫️</div>
+      <p className="text-gray-400 text-sm font-medium">Team Climate</p>
+      <p className="text-gray-600 text-xs mt-1">No votes yet — waiting for the team</p>
+    </div>
+  )
+  return (
+    <div className={`${w.bg} border ${w.border} rounded-3xl p-5`}>
+      <p className="text-gray-400 text-xs font-semibold uppercase tracking-widest mb-3 text-center">Team Climate</p>
+      <div className="flex items-center gap-4">
+        <div className="text-6xl leading-none">{w.icon}</div>
+        <div>
+          <p className={`font-bold text-base ${w.text}`}>{w.label}</p>
+          <p className="text-gray-400 text-xs mt-1 leading-relaxed">{w.meaning}</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // Boss view: see how team rated her + rate the team
 function BossView({ allVotes, love, bad, bossVote, submitting, handleBossVote, user }) {
   return (
@@ -70,6 +129,8 @@ function BossView({ allVotes, love, bad, bossVote, submitting, handleBossVote, u
         </div>
         <h1 className="text-xl font-bold text-white">{user.name}</h1>
       </div>
+
+      <WeatherWidget love={love} bad={bad} />
 
       {/* Team's votes on boss — read only */}
       <div className="bg-white/5 rounded-3xl p-5 flex flex-col gap-4">
@@ -110,6 +171,8 @@ function BossView({ allVotes, love, bad, bossVote, submitting, handleBossVote, u
 function TeamView({ myVote, allVotes, love, bad, bossVote, submitting, handleTeamVote }) {
   return (
     <div className="flex flex-col gap-6">
+      <WeatherWidget love={love} bad={bad} />
+
       {/* Rate boss */}
       <div className="bg-white/5 rounded-3xl p-5 flex flex-col gap-4">
         <div>
