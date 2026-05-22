@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Heart, Frown } from 'lucide-react'
+import { Heart, Frown, Loader2, Unplug, Users, Crown } from 'lucide-react'
 import { useUser } from '../UserContext'
 import { useToday } from '../useStore'
 import {
@@ -59,6 +59,118 @@ function ScoreBar({ love, bad }) {
   )
 }
 
+// Boss view: see how team rated her + rate the team
+function BossView({ allVotes, love, bad, bossVote, submitting, handleBossVote, user }) {
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="text-center">
+        <div className="flex items-center justify-center gap-2 mb-1">
+          <Crown size={18} className="text-yellow-400" strokeWidth={1.5} />
+          <span className="text-yellow-400 text-sm font-semibold">Boss View</span>
+        </div>
+        <h1 className="text-xl font-bold text-white">{user.name}</h1>
+      </div>
+
+      {/* Team's votes on boss — read only */}
+      <div className="bg-white/5 rounded-3xl p-5 flex flex-col gap-4">
+        <div className="flex items-center gap-2">
+          <Users size={16} className="text-gray-400" strokeWidth={1.5} />
+          <h2 className="font-bold text-white text-base">Team's vibe on you today</h2>
+        </div>
+        {allVotes.length === 0 ? (
+          <p className="text-gray-600 text-sm text-center py-4">No votes yet today</p>
+        ) : (
+          <>
+            <ScoreBar love={love} bad={bad} />
+            <p className="text-xs text-gray-500 text-center">
+              {allVotes.length} {allVotes.length === 1 ? 'vote' : 'votes'} today
+            </p>
+            <div className="flex flex-col gap-1 max-h-40 overflow-y-auto">
+              {allVotes.map((v, i) => (
+                <div key={i} className="flex items-center justify-between text-xs text-gray-400 py-1 border-b border-white/5 last:border-0">
+                  <span>{v.userName}</span>
+                  {v.emoji === 'love'
+                    ? <Heart size={12} className="text-pink-400" />
+                    : <Frown size={12} className="text-orange-400" />}
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Boss rates team */}
+      <div className="bg-white/5 rounded-3xl p-5 flex flex-col gap-4">
+        <div>
+          <h2 className="font-bold text-white text-base">Your verdict on the team</h2>
+          <p className="text-gray-400 text-xs mt-0.5">
+            {bossVote ? `You rated: ${bossVote.emoji === 'love' ? 'Love' : 'Not ok'} — tap to change` : 'How is the team today?'}
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <VoteButton emoji="love" label="Good job" active={bossVote?.emoji === 'love'} disabled={submitting} onClick={() => handleBossVote('love')} />
+          <VoteButton emoji="bad" label="Not ok" active={bossVote?.emoji === 'bad'} disabled={submitting} onClick={() => handleBossVote('bad')} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Team view: rate boss + see boss's verdict
+function TeamView({ myVote, allVotes, love, bad, bossVote, submitting, handleTeamVote, user }) {
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="text-center">
+        <h1 className="text-xl font-bold text-white">
+          Hey, <span className="text-purple-400">{user.name}</span>
+        </h1>
+      </div>
+
+      {/* Rate boss */}
+      <div className="bg-white/5 rounded-3xl p-5 flex flex-col gap-4">
+        <div>
+          <h2 className="font-bold text-white text-base">How's the boss vibe today?</h2>
+          <p className="text-gray-400 text-xs mt-0.5">
+            {myVote ? `You voted: ${myVote.emoji === 'love' ? 'Love' : 'Bad'} — you can change it` : 'Cast your vote'}
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <VoteButton emoji="love" label="Love it" active={myVote?.emoji === 'love'} disabled={submitting} onClick={() => handleTeamVote('love')} />
+          <VoteButton emoji="bad" label="Not ok" active={myVote?.emoji === 'bad'} disabled={submitting} onClick={() => handleTeamVote('bad')} />
+        </div>
+        {allVotes.length > 0 && <ScoreBar love={love} bad={bad} />}
+        {allVotes.length > 0 && (
+          <p className="text-xs text-gray-500 text-center">
+            {allVotes.length} {allVotes.length === 1 ? 'vote' : 'votes'} today
+          </p>
+        )}
+      </div>
+
+      {/* Boss verdict — read only */}
+      <div className="bg-white/5 rounded-3xl p-5 flex flex-col gap-4">
+        <div className="flex items-center gap-2">
+          <Crown size={16} className="text-yellow-400" strokeWidth={1.5} />
+          <h2 className="font-bold text-white text-base">Boss's verdict on the team</h2>
+        </div>
+        <div className="flex items-center justify-center py-4">
+          {bossVote ? (
+            <div className="text-center flex flex-col items-center gap-2">
+              {bossVote.emoji === 'love'
+                ? <Heart size={56} strokeWidth={1.5} className="text-pink-400" />
+                : <Frown size={56} strokeWidth={1.5} className="text-orange-400" />}
+              <p className="text-gray-400 text-sm">
+                {bossVote.emoji === 'love' ? 'Boss loves the team today!' : 'Boss is not ok with the team today'}
+              </p>
+            </div>
+          ) : (
+            <p className="text-gray-600 text-sm">No verdict yet</p>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function Home() {
   const { user, isAdmin } = useUser()
   const today = useToday()
@@ -69,6 +181,10 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [submitting, setSubmitting] = useState(false)
+
+  const dateLabel = new Date().toLocaleDateString('en-US', {
+    weekday: 'long', month: 'long', day: 'numeric',
+  })
 
   useEffect(() => {
     async function load() {
@@ -125,14 +241,10 @@ export default function Home() {
   const love = allVotes.filter((v) => v.emoji === 'love').length
   const bad = allVotes.filter((v) => v.emoji === 'bad').length
 
-  const dateLabel = new Date().toLocaleDateString('en-US', {
-    weekday: 'long', month: 'long', day: 'numeric',
-  })
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-4xl animate-pulse">✨</div>
+        <Loader2 size={36} className="text-purple-400 animate-spin" strokeWidth={1.5} />
       </div>
     )
   }
@@ -140,14 +252,11 @@ export default function Home() {
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 gap-4 text-center">
-        <div className="text-5xl">🔌</div>
+        <Unplug size={48} className="text-gray-500" strokeWidth={1.5} />
         <p className="text-white font-semibold">Firebase not connected</p>
         <p className="text-gray-400 text-sm">Make sure your <code className="text-purple-400 bg-white/10 px-1 rounded">.env</code> file has the correct Firebase config values, then restart the dev server.</p>
         <p className="text-red-400 text-xs bg-red-900/20 border border-red-500/20 rounded-xl px-4 py-2 break-all">{error}</p>
-        <button
-          onClick={() => window.location.reload()}
-          className="mt-2 bg-white/10 hover:bg-white/20 text-white text-sm px-5 py-2 rounded-xl transition-colors"
-        >
+        <button onClick={() => window.location.reload()} className="mt-2 bg-white/10 hover:bg-white/20 text-white text-sm px-5 py-2 rounded-xl transition-colors">
           Retry
         </button>
       </div>
@@ -155,93 +264,12 @@ export default function Home() {
   }
 
   return (
-    <div className="px-5 py-6 flex flex-col gap-6">
-      <div className="text-center">
-        <p className="text-gray-500 text-sm">{dateLabel}</p>
-        <h1 className="text-xl font-bold text-white mt-1">
-          Hey, <span className="text-purple-400">{user.name}</span> 👋
-        </h1>
-      </div>
-
-      {/* Team rates boss */}
-      <div className="bg-white/5 rounded-3xl p-5 flex flex-col gap-4">
-        <div>
-          <h2 className="font-bold text-white text-base">How's the boss vibe today?</h2>
-          <p className="text-gray-400 text-xs mt-0.5">
-            {myVote ? `You voted: ${myVote.emoji === 'love' ? 'Love' : 'Bad'} — you can change it` : 'Cast your vote'}
-          </p>
-        </div>
-        <div className="flex gap-3">
-          <VoteButton
-            emoji="love"
-            label="Love it"
-            active={myVote?.emoji === 'love'}
-            disabled={submitting}
-            onClick={() => handleTeamVote('love')}
-          />
-          <VoteButton
-            emoji="bad"
-            label="Not ok"
-            active={myVote?.emoji === 'bad'}
-            disabled={submitting}
-            onClick={() => handleTeamVote('bad')}
-          />
-        </div>
-        {allVotes.length > 0 && <ScoreBar love={love} bad={bad} />}
-        {allVotes.length > 0 && (
-          <p className="text-xs text-gray-500 text-center">
-            {allVotes.length} {allVotes.length === 1 ? 'vote' : 'votes'} today
-          </p>
-        )}
-      </div>
-
-      {/* Boss rates team */}
-      <div className="bg-white/5 rounded-3xl p-5 flex flex-col gap-4">
-        <div>
-          <h2 className="font-bold text-white text-base">Boss's verdict on the team</h2>
-          {isAdmin ? (
-            <p className="text-gray-400 text-xs mt-0.5">
-              {bossVote ? `You rated: ${bossVote.emoji === 'love' ? 'Love' : 'Not ok'} — tap to change` : 'Rate the team today'}
-            </p>
-          ) : (
-            <p className="text-gray-400 text-xs mt-0.5">Only the boss can rate here</p>
-          )}
-        </div>
-
-        {isAdmin ? (
-          <div className="flex gap-3">
-            <VoteButton
-              emoji="love"
-              label="Good job"
-              active={bossVote?.emoji === 'love'}
-              disabled={submitting}
-              onClick={() => handleBossVote('love')}
-            />
-            <VoteButton
-              emoji="bad"
-              label="Not ok"
-              active={bossVote?.emoji === 'bad'}
-              disabled={submitting}
-              onClick={() => handleBossVote('bad')}
-            />
-          </div>
-        ) : (
-          <div className="flex items-center justify-center py-4">
-            {bossVote ? (
-              <div className="text-center flex flex-col items-center gap-2">
-                {bossVote.emoji === 'love'
-                  ? <Heart size={56} strokeWidth={1.5} className="text-pink-400" />
-                  : <Frown size={56} strokeWidth={1.5} className="text-orange-400" />}
-                <p className="text-gray-400 text-sm">
-                  {bossVote.emoji === 'love' ? 'Boss loves the team today!' : 'Boss is not ok with team today'}
-                </p>
-              </div>
-            ) : (
-              <p className="text-gray-600 text-sm">No verdict yet</p>
-            )}
-          </div>
-        )}
-      </div>
+    <div className="px-5 py-6 flex flex-col gap-2">
+      <p className="text-gray-500 text-sm text-center mb-2">{dateLabel}</p>
+      {isAdmin
+        ? <BossView allVotes={allVotes} love={love} bad={bad} bossVote={bossVote} submitting={submitting} handleBossVote={handleBossVote} user={user} />
+        : <TeamView myVote={myVote} allVotes={allVotes} love={love} bad={bad} bossVote={bossVote} submitting={submitting} handleTeamVote={handleTeamVote} user={user} />
+      }
     </div>
   )
 }

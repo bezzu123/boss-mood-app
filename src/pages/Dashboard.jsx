@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Heart, Frown } from 'lucide-react'
+import { Heart, Frown, Loader2, Flame } from 'lucide-react'
 import { getTrend } from '../db'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -41,7 +41,7 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-4xl animate-pulse">📊</div>
+        <Loader2 size={36} className="text-purple-400 animate-spin" strokeWidth={1.5} />
       </div>
     )
   }
@@ -61,7 +61,7 @@ export default function Dashboard() {
 
   return (
     <div className="px-5 py-6 flex flex-col gap-6">
-      <h1 className="text-xl font-bold text-white text-center">Vibe Trend 📈</h1>
+      <h1 className="text-xl font-bold text-white text-center">Vibe Trend</h1>
 
       {/* Summary cards */}
       <div className="grid grid-cols-2 gap-3">
@@ -75,7 +75,7 @@ export default function Dashboard() {
         </div>
         <div className="bg-purple-600/20 border border-purple-500/30 rounded-2xl p-4 text-center">
           <div className="text-3xl font-bold text-purple-400">{streak}</div>
-          <div className="text-xs text-gray-400 mt-1">🔥 Love streak (days)</div>
+          <div className="text-xs text-gray-400 mt-1 flex items-center justify-center gap-1"><Flame size={11} className="text-purple-400" /> Love streak (days)</div>
         </div>
         <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center">
           <div className="text-xl font-bold text-white flex items-center justify-center gap-1">

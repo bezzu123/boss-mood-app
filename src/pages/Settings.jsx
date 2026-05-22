@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Crown, Check, LogOut } from 'lucide-react'
 import { useUser } from '../UserContext'
 
 export default function Settings() {
@@ -28,7 +29,7 @@ export default function Settings() {
 
   return (
     <div className="px-5 py-6 flex flex-col gap-6">
-      <h1 className="text-xl font-bold text-white text-center">Settings ⚙️</h1>
+      <h1 className="text-xl font-bold text-white text-center">Settings</h1>
 
       {/* Change name */}
       <div className="bg-white/5 rounded-3xl p-5 flex flex-col gap-4">
@@ -46,9 +47,9 @@ export default function Settings() {
           <button
             type="submit"
             disabled={newName.trim().length < 2}
-            className="bg-purple-600 hover:bg-purple-500 disabled:opacity-40 text-white font-semibold py-2.5 rounded-2xl transition-colors"
+            className="bg-purple-600 hover:bg-purple-500 disabled:opacity-40 text-white font-semibold py-2.5 rounded-2xl transition-colors flex items-center justify-center gap-2"
           >
-            {nameSaved ? '✅ Saved!' : 'Save name'}
+            {nameSaved ? <><Check size={16} /> Saved!</> : 'Save name'}
           </button>
         </form>
       </div>
@@ -56,9 +57,14 @@ export default function Settings() {
       {/* Admin section */}
       <div className="bg-white/5 rounded-3xl p-5 flex flex-col gap-4">
         <div>
-          <h2 className="font-bold text-white text-base">Boss mode 👑</h2>
+          <div className="flex items-center gap-2">
+            <Crown size={16} className="text-yellow-400" strokeWidth={1.5} />
+            <h2 className="font-bold text-white text-base">Boss mode</h2>
+          </div>
           {isAdmin ? (
-            <p className="text-green-400 text-xs mt-0.5">✅ You are in boss mode</p>
+            <p className="text-green-400 text-xs mt-0.5 flex items-center gap-1">
+              <Check size={12} /> You are in boss mode
+            </p>
           ) : (
             <p className="text-gray-400 text-xs mt-0.5">Enter the PIN to unlock boss powers</p>
           )}
@@ -67,9 +73,9 @@ export default function Settings() {
         {isAdmin ? (
           <button
             onClick={logoutAdmin}
-            className="bg-red-700/40 hover:bg-red-700/60 border border-red-500/30 text-red-300 font-semibold py-2.5 rounded-2xl transition-colors"
+            className="bg-red-700/40 hover:bg-red-700/60 border border-red-500/30 text-red-300 font-semibold py-2.5 rounded-2xl transition-colors flex items-center justify-center gap-2"
           >
-            Exit boss mode
+            <LogOut size={16} strokeWidth={1.5} /> Exit boss mode
           </button>
         ) : (
           <form onSubmit={handleAdminLogin} className="flex flex-col gap-3">
@@ -88,9 +94,9 @@ export default function Settings() {
             <button
               type="submit"
               disabled={!pin}
-              className="bg-yellow-600/40 hover:bg-yellow-600/60 border border-yellow-500/30 disabled:opacity-40 text-yellow-200 font-semibold py-2.5 rounded-2xl transition-colors"
+              className="bg-yellow-600/40 hover:bg-yellow-600/60 border border-yellow-500/30 disabled:opacity-40 text-yellow-200 font-semibold py-2.5 rounded-2xl transition-colors flex items-center justify-center gap-2"
             >
-              Unlock 👑
+              <Crown size={16} strokeWidth={1.5} /> Unlock boss mode
             </button>
           </form>
         )}
