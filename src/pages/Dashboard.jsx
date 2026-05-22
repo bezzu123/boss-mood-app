@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react'
+import { Heart, Frown } from 'lucide-react'
 import { getTrend } from '../db'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Legend,
 } from 'recharts'
 
-function BossEmoji({ emoji }) {
+function BossIcon({ emoji }) {
   if (!emoji) return <span className="text-gray-600">—</span>
-  return <span>{emoji === 'love' ? '❤️' : '💢'}</span>
+  return emoji === 'love'
+    ? <Heart size={14} strokeWidth={1.5} className="text-pink-400 inline" />
+    : <Frown size={14} strokeWidth={1.5} className="text-orange-400 inline" />
 }
 
 const CustomTooltip = ({ active, payload, label }) => {
@@ -64,19 +67,19 @@ export default function Dashboard() {
       <div className="grid grid-cols-2 gap-3">
         <div className="bg-pink-600/20 border border-pink-500/30 rounded-2xl p-4 text-center">
           <div className="text-3xl font-bold text-pink-400">{totalLove}</div>
-          <div className="text-xs text-gray-400 mt-1">❤️ Love votes (10d)</div>
+          <div className="text-xs text-gray-400 mt-1 flex items-center justify-center gap-1"><Heart size={11} className="text-pink-400" /> Love votes (10d)</div>
         </div>
-        <div className="bg-red-700/20 border border-red-500/30 rounded-2xl p-4 text-center">
-          <div className="text-3xl font-bold text-red-400">{totalBad}</div>
-          <div className="text-xs text-gray-400 mt-1">💢 Bad votes (10d)</div>
+        <div className="bg-orange-600/20 border border-orange-500/30 rounded-2xl p-4 text-center">
+          <div className="text-3xl font-bold text-orange-400">{totalBad}</div>
+          <div className="text-xs text-gray-400 mt-1 flex items-center justify-center gap-1"><Frown size={11} className="text-orange-400" /> Bad votes (10d)</div>
         </div>
         <div className="bg-purple-600/20 border border-purple-500/30 rounded-2xl p-4 text-center">
           <div className="text-3xl font-bold text-purple-400">{streak}</div>
           <div className="text-xs text-gray-400 mt-1">🔥 Love streak (days)</div>
         </div>
         <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center">
-          <div className="text-xl font-bold text-white">
-            {bossLoveDays}❤️ / {bossBadDays}💢
+          <div className="text-xl font-bold text-white flex items-center justify-center gap-1">
+            {bossLoveDays}<Heart size={14} className="text-pink-400" /> / {bossBadDays}<Frown size={14} className="text-orange-400" />
           </div>
           <div className="text-xs text-gray-400 mt-1">Boss ratings (10d)</div>
         </div>
@@ -92,8 +95,8 @@ export default function Dashboard() {
             <YAxis tick={{ fill: '#9ca3af', fontSize: 11 }} allowDecimals={false} />
             <Tooltip content={<CustomTooltip />} />
             <Legend wrapperStyle={{ fontSize: 11, color: '#9ca3af' }} />
-            <Bar dataKey="teamLove" name="❤️ Love" fill="#ec4899" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="teamBad" name="💢 Bad" fill="#ef4444" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="teamLove" name="Love" fill="#ec4899" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="teamBad" name="Bad" fill="#ea580c" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -108,10 +111,10 @@ export default function Dashboard() {
               className="flex items-center justify-between text-sm py-2 border-b border-white/5 last:border-0"
             >
               <span className="text-gray-400 text-xs w-14">{d.label}</span>
-              <span className="text-pink-400">❤️ {d.teamLove}</span>
-              <span className="text-red-400">💢 {d.teamBad}</span>
-              <span className="w-8 text-center">
-                <BossEmoji emoji={d.bossEmoji} />
+              <span className="text-pink-400 flex items-center gap-1"><Heart size={12} /> {d.teamLove}</span>
+              <span className="text-orange-400 flex items-center gap-1"><Frown size={12} /> {d.teamBad}</span>
+              <span className="w-8 flex justify-center">
+                <BossIcon emoji={d.bossEmoji} />
               </span>
             </div>
           ))}

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Heart, Frown } from 'lucide-react'
 import { useUser } from '../UserContext'
 import { useToday } from '../useStore'
 import {
@@ -12,28 +13,28 @@ import {
 function VoteButton({ emoji, label, active, onClick, disabled }) {
   const configs = {
     love: {
-      icon: '❤️',
+      Icon: Heart,
       bg: active ? 'bg-pink-600' : 'bg-white/5',
       border: active ? 'border-pink-400' : 'border-white/10',
       text: active ? 'text-white' : 'text-gray-400',
       glow: active ? 'shadow-[0_0_24px_rgba(236,72,153,0.5)]' : '',
     },
     bad: {
-      icon: '💢',
-      bg: active ? 'bg-red-700' : 'bg-white/5',
-      border: active ? 'border-red-400' : 'border-white/10',
+      Icon: Frown,
+      bg: active ? 'bg-orange-600' : 'bg-white/5',
+      border: active ? 'border-orange-400' : 'border-white/10',
       text: active ? 'text-white' : 'text-gray-400',
-      glow: active ? 'shadow-[0_0_24px_rgba(239,68,68,0.5)]' : '',
+      glow: active ? 'shadow-[0_0_24px_rgba(234,88,12,0.5)]' : '',
     },
   }
-  const c = configs[emoji]
+  const { Icon, ...c } = configs[emoji]
   return (
     <button
       onClick={onClick}
       disabled={disabled}
       className={`flex-1 flex flex-col items-center gap-2 py-6 rounded-3xl border-2 transition-all duration-200 ${c.bg} ${c.border} ${c.text} ${c.glow} disabled:opacity-40 active:scale-95`}
     >
-      <span className="text-5xl">{c.icon}</span>
+      <Icon size={44} strokeWidth={1.5} />
       <span className="font-semibold text-sm uppercase tracking-widest">{label}</span>
     </button>
   )
@@ -45,8 +46,8 @@ function ScoreBar({ love, bad }) {
   return (
     <div className="w-full">
       <div className="flex justify-between text-xs text-gray-400 mb-1">
-        <span>❤️ {love} love</span>
-        <span>{bad} bad 💢</span>
+        <span className="flex items-center gap-1"><Heart size={12} /> {love} love</span>
+        <span className="flex items-center gap-1">{bad} bad <Frown size={12} /></span>
       </div>
       <div className="h-3 bg-white/10 rounded-full overflow-hidden">
         <div
@@ -167,7 +168,7 @@ export default function Home() {
         <div>
           <h2 className="font-bold text-white text-base">How's the boss vibe today?</h2>
           <p className="text-gray-400 text-xs mt-0.5">
-            {myVote ? `You voted: ${myVote.emoji === 'love' ? '❤️ Love' : '💢 Bad'} — you can change it` : 'Cast your vote'}
+            {myVote ? `You voted: ${myVote.emoji === 'love' ? 'Love' : 'Bad'} — you can change it` : 'Cast your vote'}
           </p>
         </div>
         <div className="flex gap-3">
@@ -200,7 +201,7 @@ export default function Home() {
           <h2 className="font-bold text-white text-base">Boss's verdict on the team</h2>
           {isAdmin ? (
             <p className="text-gray-400 text-xs mt-0.5">
-              {bossVote ? `You rated: ${bossVote.emoji === 'love' ? '❤️ Love' : '💢 Not ok'} — tap to change` : 'Rate the team today'}
+              {bossVote ? `You rated: ${bossVote.emoji === 'love' ? 'Love' : 'Not ok'} — tap to change` : 'Rate the team today'}
             </p>
           ) : (
             <p className="text-gray-400 text-xs mt-0.5">Only the boss can rate here</p>
@@ -227,9 +228,11 @@ export default function Home() {
         ) : (
           <div className="flex items-center justify-center py-4">
             {bossVote ? (
-              <div className="text-center">
-                <div className="text-6xl">{bossVote.emoji === 'love' ? '❤️' : '💢'}</div>
-                <p className="text-gray-400 text-sm mt-2">
+              <div className="text-center flex flex-col items-center gap-2">
+                {bossVote.emoji === 'love'
+                  ? <Heart size={56} strokeWidth={1.5} className="text-pink-400" />
+                  : <Frown size={56} strokeWidth={1.5} className="text-orange-400" />}
+                <p className="text-gray-400 text-sm">
                   {bossVote.emoji === 'love' ? 'Boss loves the team today!' : 'Boss is not ok with team today'}
                 </p>
               </div>
