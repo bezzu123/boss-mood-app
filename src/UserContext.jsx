@@ -59,6 +59,7 @@ export function UserProvider({ children }) {
   const logout = () => {
     localStorage.removeItem(ROLE_KEY)
     localStorage.removeItem(USER_KEY)
+    window.history.pushState({}, '', '/')
     setRole(null)
     setUser(null)
   }

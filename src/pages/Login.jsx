@@ -33,8 +33,8 @@ export default function Login() {
             <User size={24} strokeWidth={1.5} className="text-purple-400" />
           </div>
           <div className="text-left">
-            <p className="font-bold text-white">I'm an Employee</p>
-            <p className="text-xs text-gray-400 mt-0.5">Pick a name and vote</p>
+            <p className="font-bold text-white">I'm a Team Member</p>
+            <p className="text-xs text-gray-400 mt-0.5">Vote anonymously</p>
           </div>
         </button>
       </div>
