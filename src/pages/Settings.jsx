@@ -3,6 +3,8 @@ import { Crown, Check, LogOut, KeyRound, Loader2, User } from 'lucide-react'
 import { useUser } from '../UserContext'
 import { getBossPin, setBossPin } from '../db'
 
+// eslint-disable-next-line no-unused-vars
+
 function BossSettings({ logout }) {
   const [currentPin, setCurrentPin] = useState('')
   const [newPin, setNewPin] = useState('')
@@ -98,45 +100,12 @@ function BossSettings({ logout }) {
   )
 }
 
-function EmployeeSettings({ user, saveEmployeeName, logout }) {
-  const [newName, setNewName] = useState(user?.name || '')
-  const [nameSaved, setNameSaved] = useState(false)
-
-  const handleSaveName = (e) => {
-    e.preventDefault()
-    if (newName.trim().length < 2) return
-    saveEmployeeName(newName.trim())
-    setNameSaved(true)
-    setTimeout(() => setNameSaved(false), 2000)
-  }
-
+function EmployeeSettings({ logout }) {
   return (
     <div className="px-5 py-6 flex flex-col gap-6">
       <div className="flex items-center justify-center gap-2">
         <User size={18} className="text-purple-400" strokeWidth={1.5} />
         <h1 className="text-xl font-bold text-white">Settings</h1>
-      </div>
-
-      <div className="bg-white/5 rounded-3xl p-5 flex flex-col gap-4">
-        <div>
-          <h2 className="font-bold text-white text-base">Your name</h2>
-          <p className="text-gray-400 text-xs mt-0.5">Change your funny name anytime</p>
-        </div>
-        <form onSubmit={handleSaveName} className="flex flex-col gap-3">
-          <input
-            className="bg-white/10 border border-white/20 rounded-2xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-400"
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-            maxLength={30}
-          />
-          <button
-            type="submit"
-            disabled={newName.trim().length < 2}
-            className="bg-purple-600 hover:bg-purple-500 disabled:opacity-40 text-white font-semibold py-2.5 rounded-2xl transition-colors flex items-center justify-center gap-2"
-          >
-            {nameSaved ? <><Check size={16} /> Saved!</> : 'Save name'}
-          </button>
-        </form>
       </div>
 
       <button
@@ -155,5 +124,5 @@ export default function Settings() {
   const { isAdmin, user, saveEmployeeName, logout } = useUser()
 
   if (isAdmin) return <BossSettings logout={logout} />
-  return <EmployeeSettings user={user} saveEmployeeName={saveEmployeeName} logout={logout} />
+  return <EmployeeSettings logout={logout} />
 }

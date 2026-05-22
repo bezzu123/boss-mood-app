@@ -3,7 +3,6 @@ import { Home as HomeIcon, BarChart2, Settings as SettingsIcon } from 'lucide-re
 import { UserProvider, useUser } from './UserContext'
 import Login from './pages/Login'
 import BossPin from './pages/BossPin'
-import NameSetup from './pages/NameSetup'
 import Home from './pages/Home'
 import Dashboard from './pages/Dashboard'
 import Settings from './pages/Settings'
@@ -33,7 +32,6 @@ function Inner() {
 
   if (screen === 'landing') return <Login />
   if (screen === 'boss-pin') return <BossPin />
-  if (screen === 'employee-name') return <NameSetup />
 
   return (
     <BrowserRouter>

@@ -19,9 +19,8 @@ export function UserProvider({ children }) {
   const getScreen = () => {
     if (!role) return 'landing'
     if (role === 'boss' && user) return 'app'
-    if (role === 'boss' && !user) return 'boss-pin'
-    if (role === 'employee' && user) return 'app'
-    if (role === 'employee' && !user) return 'employee-name'
+    if (role === 'boss') return 'boss-pin'
+    if (role === 'employee') return 'app'
     return 'landing'
   }
 
@@ -35,6 +34,12 @@ export function UserProvider({ children }) {
   const chooseEmployee = () => {
     setRole('employee')
     localStorage.setItem(ROLE_KEY, 'employee')
+    // assign anonymous ID immediately — no name needed
+    if (!user) {
+      const u = { id: crypto.randomUUID(), name: '' }
+      localStorage.setItem(USER_KEY, JSON.stringify(u))
+      setUser(u)
+    }
   }
 
   const loginBoss = () => {

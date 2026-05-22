@@ -107,15 +107,9 @@ function BossView({ allVotes, love, bad, bossVote, submitting, handleBossVote, u
 }
 
 // Team view: rate boss + see boss's verdict
-function TeamView({ myVote, allVotes, love, bad, bossVote, submitting, handleTeamVote, user }) {
+function TeamView({ myVote, allVotes, love, bad, bossVote, submitting, handleTeamVote }) {
   return (
     <div className="flex flex-col gap-6">
-      <div className="text-center">
-        <h1 className="text-xl font-bold text-white">
-          Hey, <span className="text-purple-400">{user.name}</span>
-        </h1>
-      </div>
-
       {/* Rate boss */}
       <div className="bg-white/5 rounded-3xl p-5 flex flex-col gap-4">
         <div>
@@ -258,7 +252,7 @@ export default function Home() {
       <p className="text-gray-500 text-sm text-center mb-2">{dateLabel}</p>
       {isAdmin
         ? <BossView allVotes={allVotes} love={love} bad={bad} bossVote={bossVote} submitting={submitting} handleBossVote={handleBossVote} user={user} />
-        : <TeamView myVote={myVote} allVotes={allVotes} love={love} bad={bad} bossVote={bossVote} submitting={submitting} handleTeamVote={handleTeamVote} user={user} />
+        : <TeamView myVote={myVote} allVotes={allVotes} love={love} bad={bad} bossVote={bossVote} submitting={submitting} handleTeamVote={handleTeamVote} />
       }
     </div>
   )

@@ -14,15 +14,14 @@ export default function BossPin() {
     setLoading(true)
     setError(false)
     try {
-      const correct = await getBossPin()
+      let correct = '12345'
+      try { correct = await getBossPin() } catch { /* Firestore unavailable, use default */ }
       if (pin === correct) {
         loginBoss()
       } else {
         setError(true)
         setPin('')
       }
-    } catch {
-      setError(true)
     } finally {
       setLoading(false)
     }
