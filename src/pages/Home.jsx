@@ -66,42 +66,59 @@ export default function Home() {
   const [allVotes, setAllVotes] = useState([])
   const [bossVote, setBossVote] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
     async function load() {
       setLoading(true)
-      const [mv, av, bv] = await Promise.all([
-        getMyTeamVote(user.id, today),
-        getTodayTeamVotes(today),
-        getBossVote(today),
-      ])
-      setMyVote(mv)
-      setAllVotes(av)
-      setBossVote(bv)
-      setLoading(false)
+      setError(null)
+      try {
+        const [mv, av, bv] = await Promise.all([
+          getMyTeamVote(user.id, today),
+          getTodayTeamVotes(today),
+          getBossVote(today),
+        ])
+        setMyVote(mv)
+        setAllVotes(av)
+        setBossVote(bv)
+      } catch (e) {
+        setError(e.message || 'Failed to connect to database')
+      } finally {
+        setLoading(false)
+      }
     }
     load()
   }, [user.id, today])
 
   const handleTeamVote = async (emoji) => {
     setSubmitting(true)
-    await submitTeamVote(user.id, user.name, today, emoji)
-    const [mv, av] = await Promise.all([
-      getMyTeamVote(user.id, today),
-      getTodayTeamVotes(today),
-    ])
-    setMyVote(mv)
-    setAllVotes(av)
-    setSubmitting(false)
+    try {
+      await submitTeamVote(user.id, user.name, today, emoji)
+      const [mv, av] = await Promise.all([
+        getMyTeamVote(user.id, today),
+        getTodayTeamVotes(today),
+      ])
+      setMyVote(mv)
+      setAllVotes(av)
+    } catch (e) {
+      alert('Could not save vote: ' + e.message)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const handleBossVote = async (emoji) => {
     setSubmitting(true)
-    await submitBossVote(today, emoji)
-    const bv = await getBossVote(today)
-    setBossVote(bv)
-    setSubmitting(false)
+    try {
+      await submitBossVote(today, emoji)
+      const bv = await getBossVote(today)
+      setBossVote(bv)
+    } catch (e) {
+      alert('Could not save vote: ' + e.message)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const love = allVotes.filter((v) => v.emoji === 'love').length
@@ -115,6 +132,23 @@ export default function Home() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-4xl animate-pulse">✨</div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 gap-4 text-center">
+        <div className="text-5xl">🔌</div>
+        <p className="text-white font-semibold">Firebase not connected</p>
+        <p className="text-gray-400 text-sm">Make sure your <code className="text-purple-400 bg-white/10 px-1 rounded">.env</code> file has the correct Firebase config values, then restart the dev server.</p>
+        <p className="text-red-400 text-xs bg-red-900/20 border border-red-500/20 rounded-xl px-4 py-2 break-all">{error}</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="mt-2 bg-white/10 hover:bg-white/20 text-white text-sm px-5 py-2 rounded-xl transition-colors"
+        >
+          Retry
+        </button>
       </div>
     )
   }
