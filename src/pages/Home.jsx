@@ -63,28 +63,53 @@ const WEATHER = [
   {
     icon: '☀️',
     label: 'Sunny & Clear',
-    meaning: 'Clear expectations, high morale, and smooth operations.',
     bg: 'bg-yellow-500/10',
     border: 'border-yellow-400/30',
     text: 'text-yellow-300',
+    vibe: 'Today is the day to ask for a budget increase, sign off on expenses, or ask for a vacation day.',
+    versions: [
+      '"ฟ้าเปิด ท้องฟ้าแจ่มใส ไหว้พระแล้วได้ผล"\nThe sky is open, weather is clear, praying to the holy spirits finally paid off.',
+      '"อารมณ์ดีระดับพรีเมียม / บอสสวมร่างทอง"\nPremium mood level / Boss is in "Golden Form" mode.',
+    ],
   },
   {
     icon: '🌤️',
     label: 'Partly Cloudy',
-    meaning: 'Good energy, but shifting priorities or minor communication blocks.',
-    bg: 'bg-blue-400/10',
-    border: 'border-blue-400/30',
-    text: 'text-blue-300',
+    bg: 'bg-sky-500/10',
+    border: 'border-sky-400/30',
+    text: 'text-sky-300',
+    vibe: 'Approach with caution. Keep your updates short, sweet, and metric-backed. Do not test their patience.',
+    versions: [
+      '"ทรงดีแต่เริ่มมีทรงอย่างแบด / ลมเพลมพัด"\nLooking okay but starting to look bad / Whimsical as the wind.',
+      '"สวดยอด... แต่สวดมนต์รอไว้ก่อนก็ดี"\nAwesome... but better start praying just in case.',
+    ],
   },
   {
     icon: '⛈️',
     label: 'Thunderstorm Incoming',
-    meaning: 'High stress, bottlenecked approvals, or burnout risks.',
     bg: 'bg-red-500/10',
     border: 'border-red-400/30',
     text: 'text-red-300',
+    vibe: 'Put on your noise-canceling headphones, double-check your emails for typos, and nod gracefully to everything.',
+    versions: [
+      '"ตัวใครตัวมัน! บอสรวบรวมพลังทำลายล้าง"\nEvery man for himself! Boss is gathering destructive energy.',
+      '"เข้าสู่โหมด \'งานเร่ง ด่วนที่สุด ยอดแย่\'"\nEntering \'Urgent, Most Urgent, Worst Ever\' mode.',
+    ],
   },
 ]
+
+const EMPTY_WEATHER = {
+  icon: '🌫️',
+  label: 'No Data Yet',
+  bg: 'bg-white/5',
+  border: 'border-white/10',
+  text: 'text-gray-400',
+  vibe: 'Absolute mystery. Tread lightly until the first cup of coffee has been consumed.',
+  versions: [
+    '"ช่วงวัดดวง / วันนี้หวยจะออกอะไร"\nThe betting period / What will today\'s lottery results look like?',
+    '"บอสยังไม่ตื่นขึ้นมาเซ็ตระบบ"\nBoss hasn\'t woken up to boot up the system yet.',
+  ],
+}
 
 function getWeather(love, bad) {
   const total = love + bad
@@ -96,23 +121,24 @@ function getWeather(love, bad) {
 }
 
 function WeatherWidget({ love, bad }) {
-  const w = getWeather(love, bad)
-  if (!w) return (
-    <div className="bg-white/5 border border-white/10 rounded-3xl p-5 text-center">
-      <div className="text-4xl mb-2">🌫️</div>
-      <p className="text-gray-400 text-sm font-medium">Team Climate</p>
-      <p className="text-gray-600 text-xs mt-1">No votes yet — waiting for the team</p>
-    </div>
-  )
+  const w = getWeather(love, bad) ?? EMPTY_WEATHER
+  // pick randomly between the two desc variants, stable per render
+  const variant = w.versions[Math.random() < 0.5 ? 0 : 1]
+
   return (
-    <div className={`${w.bg} border ${w.border} rounded-3xl p-5`}>
-      <p className="text-gray-400 text-xs font-semibold uppercase tracking-widest mb-3 text-center">Team Climate</p>
+    <div className={`${w.bg} border ${w.border} rounded-3xl p-5 flex flex-col gap-3`}>
+      <p className="text-gray-500 text-xs font-semibold uppercase tracking-widest text-center">Team Climate</p>
+
       <div className="flex items-center gap-4">
-        <div className="text-6xl leading-none">{w.icon}</div>
-        <div>
-          <p className={`font-bold text-base ${w.text}`}>{w.label}</p>
-          <p className="text-gray-400 text-xs mt-1 leading-relaxed">{w.meaning}</p>
-        </div>
+        <div className="text-6xl leading-none flex-shrink-0">{w.icon}</div>
+        <p className={`font-bold text-lg leading-tight ${w.text}`}>{w.label}</p>
+      </div>
+
+      <p className="text-gray-300 text-xs leading-relaxed whitespace-pre-line">{variant}</p>
+
+      <div className={`border-t ${w.border} pt-3`}>
+        <p className="text-gray-500 text-xs font-semibold uppercase tracking-widest mb-1">The Vibe</p>
+        <p className="text-gray-400 text-xs leading-relaxed">{w.vibe}</p>
       </div>
     </div>
   )
