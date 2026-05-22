@@ -83,18 +83,8 @@ function BossView({ allVotes, love, bad, bossVote, submitting, handleBossVote, u
           <>
             <ScoreBar love={love} bad={bad} />
             <p className="text-xs text-gray-500 text-center">
-              {allVotes.length} {allVotes.length === 1 ? 'vote' : 'votes'} today
+              {allVotes.length} anonymous {allVotes.length === 1 ? 'vote' : 'votes'} today
             </p>
-            <div className="flex flex-col gap-1 max-h-40 overflow-y-auto">
-              {allVotes.map((v, i) => (
-                <div key={i} className="flex items-center justify-between text-xs text-gray-400 py-1 border-b border-white/5 last:border-0">
-                  <span>{v.userName}</span>
-                  {v.emoji === 'love'
-                    ? <Heart size={12} className="text-pink-400" />
-                    : <Frown size={12} className="text-orange-400" />}
-                </div>
-              ))}
-            </div>
           </>
         )}
       </div>
@@ -211,7 +201,7 @@ export default function Home() {
   const handleTeamVote = async (emoji) => {
     setSubmitting(true)
     try {
-      await submitTeamVote(user.id, user.name, today, emoji)
+      await submitTeamVote(user.id, today, emoji)
       const [mv, av] = await Promise.all([
         getMyTeamVote(user.id, today),
         getTodayTeamVotes(today),

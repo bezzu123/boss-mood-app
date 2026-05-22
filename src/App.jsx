@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
 import { Home as HomeIcon, BarChart2, Settings as SettingsIcon } from 'lucide-react'
 import { UserProvider, useUser } from './UserContext'
+import Login from './pages/Login'
+import BossPin from './pages/BossPin'
 import NameSetup from './pages/NameSetup'
 import Home from './pages/Home'
 import Dashboard from './pages/Dashboard'
@@ -14,24 +16,25 @@ function Nav() {
   return (
     <nav className="flex border-t border-white/10 bg-[#0f0f1a] sticky bottom-0">
       <NavLink to="/" end className={linkClass}>
-        <HomeIcon size={20} strokeWidth={1.5} />
-        Today
+        <HomeIcon size={20} strokeWidth={1.5} /> Today
       </NavLink>
       <NavLink to="/dashboard" className={linkClass}>
-        <BarChart2 size={20} strokeWidth={1.5} />
-        Trend
+        <BarChart2 size={20} strokeWidth={1.5} /> Trend
       </NavLink>
       <NavLink to="/settings" className={linkClass}>
-        <SettingsIcon size={20} strokeWidth={1.5} />
-        Settings
+        <SettingsIcon size={20} strokeWidth={1.5} /> Settings
       </NavLink>
     </nav>
   )
 }
 
 function Inner() {
-  const { user } = useUser()
-  if (!user) return <NameSetup />
+  const { screen } = useUser()
+
+  if (screen === 'landing') return <Login />
+  if (screen === 'boss-pin') return <BossPin />
+  if (screen === 'employee-name') return <NameSetup />
+
   return (
     <BrowserRouter>
       <div className="flex flex-col flex-1">

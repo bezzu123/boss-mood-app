@@ -1,24 +1,28 @@
 import { useState } from 'react'
-import { Smile } from 'lucide-react'
+import { Smile, ArrowLeft } from 'lucide-react'
 import { useUser } from '../UserContext'
 
 export default function NameSetup() {
-  const { saveUser } = useUser()
+  const { saveEmployeeName, logout } = useUser()
   const [name, setName] = useState('')
 
   const submit = (e) => {
     e.preventDefault()
     const trimmed = name.trim()
     if (trimmed.length < 2) return
-    saveUser(trimmed)
+    saveEmployeeName(trimmed)
   }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-dvh px-6 gap-8">
+      <button onClick={logout} className="absolute top-6 left-6 text-gray-500 hover:text-gray-300 flex items-center gap-1 text-sm">
+        <ArrowLeft size={16} /> Back
+      </button>
+
       <div className="text-center">
         <Smile size={72} strokeWidth={1} className="text-purple-400 mx-auto mb-4" />
         <h1 className="text-2xl font-bold text-white mb-2">Pick your name</h1>
-        <p className="text-gray-400 text-sm">Choose something fun — it'll stick with you</p>
+        <p className="text-gray-400 text-sm">Choose something fun — your vote stays anonymous</p>
       </div>
 
       <form onSubmit={submit} className="w-full max-w-xs flex flex-col gap-4">
