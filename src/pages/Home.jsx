@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { useUser, useToday } from '../useStore'
+import { useUser } from '../UserContext'
+import { useToday } from '../useStore'
 import {
   submitTeamVote,
   getMyTeamVote,

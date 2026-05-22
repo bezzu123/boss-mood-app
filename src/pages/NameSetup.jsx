@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useUser } from '../useStore'
+import { useUser } from '../UserContext'
 
 export default function NameSetup() {
   const { saveUser } = useUser()

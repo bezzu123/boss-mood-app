@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
-import { useUser } from './useStore'
+import { UserProvider, useUser } from './UserContext'
 import NameSetup from './pages/NameSetup'
 import Home from './pages/Home'
 import Dashboard from './pages/Dashboard'
@@ -12,24 +12,16 @@ function Nav() {
     }`
   return (
     <nav className="flex border-t border-white/10 bg-[#0f0f1a] sticky bottom-0">
-      <NavLink to="/" end className={linkClass}>
-        🏠 Today
-      </NavLink>
-      <NavLink to="/dashboard" className={linkClass}>
-        📊 Trend
-      </NavLink>
-      <NavLink to="/settings" className={linkClass}>
-        ⚙️ Settings
-      </NavLink>
+      <NavLink to="/" end className={linkClass}>🏠 Today</NavLink>
+      <NavLink to="/dashboard" className={linkClass}>📊 Trend</NavLink>
+      <NavLink to="/settings" className={linkClass}>⚙️ Settings</NavLink>
     </nav>
   )
 }
 
-export default function App() {
+function Inner() {
   const { user } = useUser()
-
   if (!user) return <NameSetup />
-
   return (
     <BrowserRouter>
       <div className="flex flex-col flex-1">
@@ -43,5 +35,13 @@ export default function App() {
         <Nav />
       </div>
     </BrowserRouter>
+  )
+}
+
+export default function App() {
+  return (
+    <UserProvider>
+      <Inner />
+    </UserProvider>
   )
 }
